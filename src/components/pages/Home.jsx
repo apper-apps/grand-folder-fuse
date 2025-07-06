@@ -210,9 +210,10 @@ const getNodeAndChildrenIds = (node) => {
               </p>
             </div>
             
-            <FileUpload
+<FileUpload
               onFilesSelected={handleFilesSelected}
               accept="folder"
+              multiple={true}
               disabled={loading}
             />
             

@@ -62,12 +62,12 @@ const FileUpload = ({ onFilesSelected, accept = "", multiple = false, disabled =
       whileHover={disabled ? {} : { scale: 1.01 }}
       whileTap={disabled ? {} : { scale: 0.99 }}
     >
-      <input
+<input
         ref={inputRef}
         type="file"
         className="hidden"
         accept={accept}
-        multiple={multiple}
+        multiple={multiple || accept === "folder"}
         onChange={handleChange}
         disabled={disabled}
         webkitdirectory={accept === "folder"}
@@ -94,12 +94,18 @@ const FileUpload = ({ onFilesSelected, accept = "", multiple = false, disabled =
           <ApperIcon name="FolderOpen" size={24} />
         </motion.div>
 
-        <div className="space-y-2">
+<div className="space-y-2">
           <h3 className="text-lg font-semibold text-slate-200">
-            {dragActive ? "Drop folder here" : "Upload Folder"}
+            {dragActive 
+              ? (accept === "folder" ? "Drop folder here" : "Drop files here")
+              : (accept === "folder" ? "Upload Folder" : "Upload Files")
+            }
           </h3>
           <p className="text-slate-400">
-            Drag and drop a folder here, or click to select
+            {accept === "folder" 
+              ? "Drag and drop a folder here, or click to select"
+              : "Drag and drop files here, or click to select multiple files"
+            }
           </p>
         </div>
 
