@@ -1,10 +1,11 @@
-import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { toast } from 'react-toastify'
-import ApperIcon from '@/components/ApperIcon'
-import Button from '@/components/atoms/Button'
-import ProgressBar from '@/components/molecules/ProgressBar'
-import MergeConfigPanel from '@/components/molecules/MergeConfigPanel'
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { toast } from "react-toastify";
+import { downloadFile, formatFileSize } from "@/utils/fileUtils";
+import ApperIcon from "@/components/ApperIcon";
+import Button from "@/components/atoms/Button";
+import ProgressBar from "@/components/molecules/ProgressBar";
+import MergeConfigPanel from "@/components/molecules/MergeConfigPanel";
 
 const MergeProcessor = ({ 
   selectedFiles, 
@@ -115,12 +116,12 @@ const MergeProcessor = ({
         await new Promise(resolve => setTimeout(resolve, 100))
       }
       
-      // Merge all content
+// Merge all content
       const merged = fileContents.join(mergeConfig.separator || '\n\n')
       
       // Create and download file
       const filename = `${mergeConfig.filename || 'merged-files'}.${mergeConfig.outputFormat || 'txt'}`
-      const blob = new Blob([merged], { type: 'text/plain;charset=utf-8' })
+      const blob = new Blob([merged], { type: 'text/plain' })
       const url = URL.createObjectURL(blob)
       
       const link = document.createElement('a')
@@ -133,7 +134,6 @@ const MergeProcessor = ({
       URL.revokeObjectURL(url)
       
       toast.success(`Successfully merged ${selectedFiles.length} files into ${filename}`)
-      
     } catch (error) {
       console.error('Error merging files:', error)
       toast.error('Failed to merge files. Please try again.')

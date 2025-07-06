@@ -20,12 +20,13 @@ const MergeConfigPanel = ({
     { value: 'custom', label: 'Custom Separator' }
   ]
 
-  const outputFormatOptions = [
+const outputFormatOptions = [
     { value: 'txt', label: 'Plain Text (.txt)' },
     { value: 'md', label: 'Markdown (.md)' },
     { value: 'html', label: 'HTML (.html)' },
     { value: 'json', label: 'JSON (.json)' },
-    { value: 'xml', label: 'XML (.xml)' }
+    { value: 'xml', label: 'XML (.xml)' },
+    { value: 'pdf', label: 'PDF Document (.pdf)' }
   ]
 
   const encodingOptions = [
