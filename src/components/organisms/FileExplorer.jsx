@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import ApperIcon from '@/components/ApperIcon'
-import FileTreeNode from '@/components/molecules/FileTreeNode'
-import SearchBar from '@/components/molecules/SearchBar'
-import Button from '@/components/atoms/Button'
-import Loading from '@/components/ui/Loading'
-import Empty from '@/components/ui/Empty'
+import React, { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import ApperIcon from "@/components/ApperIcon";
+import Select from "@/components/atoms/Select";
+import Button from "@/components/atoms/Button";
+import Empty from "@/components/ui/Empty";
+import Loading from "@/components/ui/Loading";
+import FileTreeNode from "@/components/molecules/FileTreeNode";
+import SearchBar from "@/components/molecules/SearchBar";
 
 const FileExplorer = ({ 
   files, 
@@ -68,13 +69,23 @@ const FileExplorer = ({
     }, 0)
   }
 
-  const getSelectedFileCount = () => {
+const getSelectedFileCount = () => {
     return selectedFiles.length
+  }
+
+  const getAllFileAndFolderIds = (nodes) => {
+    const ids = []
+    nodes.forEach(node => {
+      ids.push(node.id)
+      if (node.children) {
+        ids.push(...getAllFileAndFolderIds(node.children))
+      }
+    })
+    return ids
   }
 
   const totalFiles = files ? getTotalFileCount(files) : 0
   const selectedCount = getSelectedFileCount()
-
   if (loading) {
     return (
       <div className="bg-surface rounded-lg p-4">
@@ -102,7 +113,7 @@ const FileExplorer = ({
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="border-b border-slate-600 pb-4">
+<div className="border-b border-slate-600 pb-4">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-slate-200 flex items-center gap-2">
             <ApperIcon name="FolderOpen" size={20} />
@@ -112,7 +123,7 @@ const FileExplorer = ({
             {selectedCount} of {totalFiles} files selected
           </div>
         </div>
-
+        
         <SearchBar
           value={searchTerm}
           onChange={setSearchTerm}
@@ -126,8 +137,11 @@ const FileExplorer = ({
           variant="outline"
           size="small"
           icon="CheckSquare"
-          onClick={onSelectAll}
-          disabled={selectedCount === totalFiles}
+          onClick={() => {
+            const allIds = getAllFileAndFolderIds(filteredFiles)
+            onSelectAll(allIds)
+          }}
+          disabled={selectedCount === getAllFileAndFolderIds(filteredFiles).length}
         >
           Select All
         </Button>
@@ -144,14 +158,14 @@ const FileExplorer = ({
 
       <div className="max-h-96 overflow-y-auto space-y-1">
         <AnimatePresence>
-          {filteredFiles.map((file) => (
+{filteredFiles.map((file) => (
             <FileTreeNode
               key={file.id}
               node={file}
               level={0}
               onToggle={handleToggleFolder}
               onSelect={onFileSelect}
-              isSelected={selectedFiles.includes(file.id)}
+              isSelected={selectedFiles}
               isExpanded={expandedFolders.has(file.id)}
               showCheckboxes={true}
             />

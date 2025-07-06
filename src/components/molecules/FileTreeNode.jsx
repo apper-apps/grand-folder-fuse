@@ -100,18 +100,19 @@ const FileTreeNode = ({
           ${isSelected ? 'bg-primary/20' : ''}
         `}
         style={{ paddingLeft: `${level * 20 + 8}px` }}
-        onClick={() => {
+onClick={() => {
           if (node.type === 'folder') {
             onToggle(node.id)
-          } else {
-            onSelect(node.id)
           }
         }}
       >
         {showCheckboxes && (
           <Checkbox
             checked={isSelected}
-            onChange={() => onSelect(node.id)}
+            onChange={(e) => {
+              e.stopPropagation()
+              onSelect(node.id)
+            }}
             className="min-w-fit"
           />
         )}
@@ -153,13 +154,13 @@ const FileTreeNode = ({
           transition={{ duration: 0.2 }}
         >
           {node.children.map((child) => (
-            <FileTreeNode
+<FileTreeNode
               key={child.id}
               node={child}
               level={level + 1}
               onToggle={onToggle}
               onSelect={onSelect}
-              isSelected={isSelected}
+              isSelected={Array.isArray(isSelected) ? isSelected.includes(child.id) : isSelected}
               isExpanded={isExpanded}
               showCheckboxes={showCheckboxes}
             />

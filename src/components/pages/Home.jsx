@@ -95,32 +95,74 @@ const Home = () => {
     }
   }
 
-  const handleFileSelect = (fileId) => {
+const getNodeAndChildrenIds = (node) => {
+    const ids = [node.id]
+    if (node.children) {
+      node.children.forEach(child => {
+        ids.push(...getNodeAndChildrenIds(child))
+      })
+    }
+    return ids
+  }
+
+  const findNodeById = (nodes, targetId) => {
+    for (const node of nodes) {
+      if (node.id === targetId) return node
+      if (node.children) {
+        const found = findNodeById(node.children, targetId)
+        if (found) return found
+      }
+    }
+    return null
+  }
+
+  const handleFileSelect = (itemId) => {
+    const node = findNodeById(files, itemId)
+    if (!node) return
+
     setSelectedFiles(prev => {
-      if (prev.includes(fileId)) {
-        return prev.filter(id => id !== fileId)
+      if (node.type === 'folder') {
+        const childIds = getNodeAndChildrenIds(node)
+        const allSelected = childIds.every(id => prev.includes(id))
+        
+        if (allSelected) {
+          // Deselect folder and all children
+          return prev.filter(id => !childIds.includes(id))
+        } else {
+          // Select folder and all children
+          const newIds = [...prev]
+          childIds.forEach(id => {
+            if (!newIds.includes(id)) {
+              newIds.push(id)
+            }
+          })
+          return newIds
+        }
       } else {
-        return [...prev, fileId]
+        // Handle file selection
+        if (prev.includes(itemId)) {
+          return prev.filter(id => id !== itemId)
+        } else {
+          return [...prev, itemId]
+        }
       }
     })
   }
 
-  const getAllFileIds = (nodes) => {
+  const getAllFileAndFolderIds = (nodes) => {
     const ids = []
     nodes.forEach(node => {
-      if (node.type === 'file') {
-        ids.push(node.id)
-      }
+      ids.push(node.id)
       if (node.children) {
-        ids.push(...getAllFileIds(node.children))
+        ids.push(...getAllFileAndFolderIds(node.children))
       }
     })
     return ids
   }
 
-  const handleSelectAll = () => {
-    const allIds = getAllFileIds(files)
-    setSelectedFiles(allIds)
+  const handleSelectAll = (allIds = null) => {
+    const idsToSelect = allIds || getAllFileAndFolderIds(files)
+    setSelectedFiles(idsToSelect)
   }
 
   const handleDeselectAll = () => {
